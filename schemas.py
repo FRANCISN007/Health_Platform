@@ -29,7 +29,6 @@ class UserProfile(BaseModel):
 
     @validator('age')
     def age_must_be_positive(cls, v):
-        print("age validator called")
         if v <= 0:
             raise ValueError('Age must be a positive number')
         return v

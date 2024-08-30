@@ -65,6 +65,11 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
 @app.patch("/users/{username}",  tags=["User"])
 async def update_user_profile(username: str, user_profile: schemas.UserProfile = Body(...), db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    existing_username = crud.get_user_by_username(db=db, username=username)
+    if existing_username is None:
+        logger.warning(f"usrname not found with id: {username}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Username: {username} does not exist")
+    
     if current_user.username != username:
         raise HTTPException(status_code=403, detail="You can only update your own profile")
 
