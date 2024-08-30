@@ -77,3 +77,21 @@ async def update_user_profile(username: str, user_profile: schemas.UserProfile =
     user_profile = schemas.UserProfile(**user_profile.dict())  # Ensuring Pydantic validation is triggered
 
     return crud.update_user_profile(db, current_user, user_profile)
+
+@app.delete("/users/{username}", tags= ["User"])
+def delete_username(username: str, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    """
+    This endpoint allows the user to Delete its own created profile
+    """
+    
+    existing_username = crud.get_user_by_username(db=db, username=username)
+    if existing_username is None:
+        logger.warning(f"Movie not found with id: {username}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"username {username} does not exist")
+    if current_user.username != username: 
+        logger.warning(f"User {current_user.username} is not authorized to delete movie_id: {username}")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"You are not authorized to delete username {username}")
+       
+    crud.delete_username(db=db, username=username)
+    logger.info(f"Movie_id {username} deleted successfully")
+    return {"message": "Movie deleted successfully"}

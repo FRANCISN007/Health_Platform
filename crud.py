@@ -39,4 +39,8 @@ def update_user_profile(db: Session, user:schemas.User, user_profile: schemas.Us
     db.refresh(user)
     return user
 
+def delete_username(db: Session, username: str):
+    db.query(models.User).filter(models.User.username == username).delete()
+    db.commit()
+
 
