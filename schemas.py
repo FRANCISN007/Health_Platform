@@ -3,39 +3,22 @@ from pydantic import BaseModel, ConfigDict, validator
 
 
 class UserProfile(BaseModel):
-    #username: str
+    username: str
     email: str
-    height:float
-    weight:float
-    age:int
+    full_name:str
+    gender: str
+    address:str
+    country: str
+    phone_no: str
+    date_of_birth:str
  
-    @validator('email')
-    def email_must_be_valid(cls, v):
-        if '@' not in v:
-            raise ValueError('invalid email')
-        return v
-        
-    @validator('height')
-    def height_must_be_positive(cls, v):
-        if v <= 0:
-            raise ValueError('Height must be a positive number')
-        return v
 
-    @validator('weight')
-    def weight_must_be_positive(cls, v):
-        if v <= 0:
-            raise ValueError('Weight must be a positive number')
-        return v
 
-    @validator('age')
-    def age_must_be_positive(cls, v):
-        if v <= 0:
-            raise ValueError('Age must be a positive number')
-        return v
+
 
 class UserBase(BaseModel):
     username: str
-    full_name: str  
+    #full_name: str  
         
     
 class UserCreate(UserBase):
@@ -45,8 +28,29 @@ class UserCreate(UserBase):
 class User(UserBase): 
     email: str
     id: int
-    
-    model_config = ConfigDict(from_attributes=True)    
+ 
+class UserProfile_id(UserProfile):  
+    email: str
+    id: int
+
+           
+model_config = ConfigDict(from_attributes=True)   
+
+
+class UserProfileWithID(BaseModel):
+    id: int  # Include the user ID
+    username: str
+    email: str
+    full_name: str
+    gender: str
+    address: str
+    country: str
+    phone_no: str
+    date_of_birth: str
+
+    class Config:
+        orm_mode = True  # This ensures compatibility with SQLAlchemy models
+ 
 
 #class UserCreate(BaseModel):
     #username: str
@@ -56,3 +60,5 @@ class User(UserBase):
 #class OAuth2PasswordRequestForm(BaseModel):
     #username: str
     #password: str
+    
+
