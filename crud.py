@@ -53,16 +53,16 @@ def get_user_by_username(db: Session, username: str):
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
-def update_user_profile(db: Session, username: str, user:schemas.User, user_profile: schemas.UserProfile):
-    user = db.query(models.UserProfile).filter(models.UserProfile.username == username).first()
+def update_user_profile(db: Session, user_id: int, user_profile: schemas.UserProfile):
+    """
+    Update the current user's profile.
+    """
+    user = db.query(models.UserProfile).filter(models.UserProfile.user_id == user_id).first()
+    
     if not user:
-        raise HTTPException(status_code=404, detail="Username not found")
+        raise HTTPException(status_code=404, detail="User profile not found")
     
-    # Update the user fields
-    #user.username = user_profile.username
-    #user.id=user_profile.id
-    #user.username=user_profile.username
-    
+    # Update the fields
     user.email = user_profile.email
     user.full_name = user_profile.full_name
     user.gender = user_profile.gender
@@ -74,6 +74,7 @@ def update_user_profile(db: Session, username: str, user:schemas.User, user_prof
     db.commit()
     db.refresh(user)
     return user
+
 
 
 

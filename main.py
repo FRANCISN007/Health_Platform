@@ -1,4 +1,5 @@
 # main.py
+import os
 from fastapi import FastAPI, Depends, HTTPException, Response, status, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -24,8 +25,11 @@ app = FastAPI()
 
 
 # Your valid Google Custom Search API key and Search Engine ID
-API_KEY = "AIzaSyC8KUNnXfAJNAbslhsYT2AQpyhPk_YMj7Y"
-CX = "f26320feb4dbe4a1b"  # Replace with your actual CX (Search Engine ID)
+#API_KEY = "AIzaSyC8KUNnXfAJNAbslhsYT2AQpyhPk_YMj7Y"
+#CX = "f26320feb4dbe4a1b"  # Replace with your actual CX (Search Engine ID)
+
+API_KEY = os.environ.get('API_KEY')
+CX = os.environ.get('CX')
 
 #from logger import get_logger
 
@@ -83,67 +87,48 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     logger.info(f"user authorisation successfull for {form_data.username}")
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.patch("/users/{username}", tags=["User"])
+@app.patch("/users/profile", tags=["User"])
 async def update_user_profile(
-    username: str,
     user_profile: schemas.UserProfile = Body(...),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    # Fetch the existing user profile
-    existing_user_profile = crud.get_user_profile_by_username(db=db, username=username)
-    if existing_user_profile is None:
-        logger.warning(f"Username not found with id: {username}")
+    """
+    Update user profile without providing username.
+    Ensure that the email matches the original user's email.
+    """
+    # Fetch the current user's profile from the database using the current user's username
+    existing_profile = crud.get_user_profile_by_username(db=db, username=current_user.username)
+
+    if not existing_profile:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+
+    # Ensure that the email from the request body matches the current user's email
+    if user_profile.email.strip() != current_user.email.strip():
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Username: {username} does not exist"
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The email provided does not match the current user's email"
         )
-    
-    # Ensure the user can only update their own profile
-    if current_user.username != username:
-        raise HTTPException(status_code=403, detail="You can only update your own profile")
-    
-    # Check if the email in the payload matches the current user's email
-    if current_user.email != user_profile.email:
-        raise HTTPException(status_code=403, detail="Your Email does not match the original user email")
 
-    # Ensure Pydantic validation
-    user_profile = schemas.UserProfile(**user_profile.dict())
+    # Proceed with the update
+    updated_profile = crud.update_user_profile(db=db, user_id=current_user.id, user_profile=user_profile)
 
-    # Pass the existing profile to update_user_profile
-    return crud.update_user_profile(db=db, username=username, user=existing_user_profile, user_profile=user_profile)
+    return updated_profile
+
 
 @app.get("/users/profile", response_model=schemas.UserProfileWithID, tags=["User"])
 def view_user_profile(
-    username: str,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
     """
-    This endpoint allows the user to view their profile.
+    View the current user's profile.
     """
-    # Fetch the user profile from the database
-    user_profile = crud.get_user_profile_by_username(db=db, username=username)
-    
-    # If the profile is not found, raise a 404 error
-    if user_profile is None:
-        logger.warning(f"Profile for username {username} not found")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Profile for username {username} does not exist"
-        )
-    
-    # Ensure that the user can only view their own profile
-    if current_user.username != username:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not authorized to view this profile"
-        )
-    
-    logger.info(f"User {username} successfully retrieved their profile")
-    
-    # Return the user profile
+    user_profile = crud.get_user_profile_by_username(db=db, username=current_user.username)
+    if not user_profile:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
     return user_profile
+
 
 
 
