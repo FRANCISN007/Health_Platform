@@ -25,4 +25,6 @@ def get_db():
         yield db
     finally:
         db.close()
-#postgresql://db_url_xsxn_user:v45sQVZYF1jwlteydX8R8g1c7JxK4Acp@dpg-cs0qahm8ii6s73csqntg-a.oregon-postgres.render.com/db_url_xsxn
+#postgresql://db_url_xsxn_user:v45sQVZYF1jwlteydX8R8g1c7JxK4Acp@dpg-cs0qahm8ii6s73csqntg-a.oregon-postgres.render.com/db_url_xsxn   
+#https://github.com/FRANCISN007/Health_Platform
+#uvicorn main:app --host 0.0.0 --port 8000'
