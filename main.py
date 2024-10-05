@@ -16,6 +16,19 @@ from nltk.corpus import stopwords
 import nltk
 from bs4 import BeautifulSoup
 
+
+import nltk
+
+# Set the directory where nltk_data should be stored
+nltk_data_dir = '/opt/render/nltk_data'
+os.makedirs(nltk_data_dir, exist_ok=True)
+nltk.data.path.append(nltk_data_dir)
+
+# Download the necessary punkt resource
+nltk.download('punkt', download_dir=nltk_data_dir)
+
+
+
 # Download necessary NLTK resources at startup
 nltk.download('stopwords')
 nltk.download('punkt')
