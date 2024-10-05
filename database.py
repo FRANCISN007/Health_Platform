@@ -7,8 +7,8 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
-#SQLALCHEMY_DATABASE_URL = os.environ.get('DB_URL')
-SQLALCHEMY_DATABASE_URL = "sqlite:///./health_db"
+SQLALCHEMY_DATABASE_URL = os.environ.get('DB_URL')
+#SQLALCHEMY_DATABASE_URL = "sqlite:///./health_db2"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
@@ -25,3 +25,4 @@ def get_db():
         yield db
     finally:
         db.close()
+#postgresql://db_url_xsxn_user:v45sQVZYF1jwlteydX8R8g1c7JxK4Acp@dpg-cs0qahm8ii6s73csqntg-a.oregon-postgres.render.com/db_url_xsxn

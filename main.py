@@ -201,14 +201,14 @@ def delete_username(username: str, db: Session = Depends(get_db), current_user: 
     
     existing_username = crud.get_user_by_username(db=db, username=username)
     if existing_username is None:
-        logger.warning(f"Movie not found with id: {username}")
+        logger.warning(f"username not found with id: {username}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"username {username} does not exist")
     if current_user.username != username: 
-        logger.warning(f"User {current_user.username} is not authorized to delete movie_id: {username}")
+        logger.warning(f"User {current_user.username} is not authorized to delete username: {username}")
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"You are not authorized to delete username {username}")
        
     crud.delete_username(db=db, username=username)
-    logger.info(f"Movie_id {username} deleted successfully")
+    logger.info(f"Username {username} deleted successfully")
     return {"message": "username deleted successfully"}
 
 

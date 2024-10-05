@@ -60,16 +60,5 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
          raise credentials_exception
     return user
 
-def update_user_profile(user_id: int, user_profile: schemas.UserProfile, db: Session):
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    user.username = user_profile.username
-    user.email = user_profile.email
-    user.height = user_profile.height
-    user.weight = user_profile.weight
-    user.age = user_profile.age
-    db.commit()
-    db.refresh(user)
-    return user
+
 
