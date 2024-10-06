@@ -28,3 +28,4 @@ def get_db():
 #postgresql://db_url_xsxn_user:v45sQVZYF1jwlteydX8R8g1c7JxK4Acp@dpg-cs0qahm8ii6s73csqntg-a.oregon-postgres.render.com/db_url_xsxn   
 #https://github.com/FRANCISN007/Health_Platform
 #uvicorn main:app --host 0.0.0 --port 8000
+#export NLTK_DATA="/opt/render/nltk_data" && python -c "import nltk; nltk.download('punkt', download_dir='/opt/render/nltk_data')" && uvicorn main:app --host 0.0.0.0 --port 8000
