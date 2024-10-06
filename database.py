@@ -29,3 +29,4 @@ def get_db():
 #https://github.com/FRANCISN007/Health_Platform
 #uvicorn main:app --host 0.0.0 --port 8000
 #export NLTK_DATA="/opt/render/nltk_data" && python -c "import nltk; nltk.download('punkt', download_dir='/opt/render/nltk_data')" && uvicorn main:app --host 0.0.0.0 --port 8000
+#python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')" && uvicorn main:app --host 0.0.0.0 --port 8000
